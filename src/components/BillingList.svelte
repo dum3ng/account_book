@@ -7,7 +7,7 @@
 </script>
 
 <div>
-  {#each sorted as item}
+  {#each sorted as item (item._id)}
     <BillingItem {item} />
   {/each}
 </div>

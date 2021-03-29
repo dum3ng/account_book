@@ -18,7 +18,7 @@
   </div>
   <div>{populated.category.name}</div>
   <div>
-    {item.amount}
+    {item.amount.toLocaleString()}
   </div>
 </div>
 

@@ -23,6 +23,13 @@ export const range = derived(billingItems, ($items) => {
   return { start: sorted[0].time, end: sorted[sorted.length - 1].time }
 })
 
+export function addBillingItem(item: BillingItem) {
+  billingItems.update((items) => {
+    items.push(item)
+    return items
+  })
+}
+
 // export function initCurrent(y: number,m: number) {
 //   currentYear.update(_ => )
 //   currentMonth.update(_ =>m)

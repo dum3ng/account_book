@@ -13,10 +13,12 @@
   import * as api from './api'
   import { onMount } from 'svelte'
   import { parseCSV } from './utils/parser'
-  import BillingItem from './components/BillingItem.svelte'
+  import Statistics from './components/Statistics.svelte'
+  import Modal from './components/Modal.svelte'
+  import AddBilling from './components/AddBilling.svelte'
   import Category from './model/category'
 
-  export let name: string
+  let addVisible = false
 
   onMount(async () => {
     $isLoading = true
@@ -44,9 +46,17 @@
   <header>
     <h1>Account Book</h1>
   </header>
-  <p>{$currentYear}</p>
-  <PeriodSelector />
-  <BillingList items={$currentBillingItems} />
+  <div class="book">
+    <div class="infobar">
+      <button on:click={() => (addVisible = !addVisible)}>add</button>
+      <PeriodSelector />
+    </div>
+    <Statistics />
+    <BillingList items={$currentBillingItems} />
+  </div>
+  <Modal visible={addVisible}>
+    <AddBilling on:close={() => (addVisible = false)} />
+  </Modal>
 </main>
 
 <style>
@@ -57,8 +67,17 @@
   }
   header {
     background: url(/assets/bg.png) repeat;
-    height: 160px;
-    padding-top: 80px;
+    height: 180px;
+    padding-top: 30px;
+  }
+  .book {
+    width: 90%;
+    margin: 0 auto;
+  }
+  .infobar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
   }
 
   h1 {
@@ -74,6 +93,14 @@
     }
     h1 {
       font-size: 4em;
+    }
+    /* .book {
+			max-width: 90%;
+		} */
+  }
+  @media (min-width: 960px) {
+    .book {
+      max-width: 640px;
     }
   }
 </style>
