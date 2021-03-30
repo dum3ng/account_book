@@ -2,21 +2,19 @@
   import {
     billingItems,
     categories,
-    currentYear,
     currentBillingItems,
     isLoading,
   } from './store'
-  import BillingItemModel from './model/billing_item'
   import BillingList from './components/BillingList.svelte'
   import PeriodSelector from './components/PeriodSelector.svelte'
   import Loading from './components/Loading.svelte'
   import * as api from './api'
   import { onMount } from 'svelte'
-  import { parseCSV, serialize } from './utils/parser'
+  import { serialize } from './utils/parser'
   import Statistics from './components/Statistics.svelte'
   import Modal from './components/Modal.svelte'
   import AddBilling from './components/AddBilling.svelte'
-  import Category from './model/category'
+  import ChartSummary from './components/CategorySummary.svelte'
 
   let addVisible = false
 
@@ -47,6 +45,7 @@
       <PeriodSelector />
     </div>
     <Statistics />
+    <ChartSummary />
     <BillingList items={$currentBillingItems} />
   </div>
   <Modal visible={addVisible}>
