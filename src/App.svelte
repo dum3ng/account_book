@@ -12,7 +12,7 @@
   import Loading from './components/Loading.svelte'
   import * as api from './api'
   import { onMount } from 'svelte'
-  import { parseCSV } from './utils/parser'
+  import { parseCSV, serialize } from './utils/parser'
   import Statistics from './components/Statistics.svelte'
   import Modal from './components/Modal.svelte'
   import AddBilling from './components/AddBilling.svelte'
@@ -20,22 +20,17 @@
 
   let addVisible = false
 
+  const saver = () => {}
+
   onMount(async () => {
     $isLoading = true
     const [items, cats] = await Promise.all([
       api.getBillingItems(),
       api.getCategories(),
     ])
-
-    $billingItems = parseCSV(items, {
-      type: (x) => parseInt(x),
-      time: (x) => new Date(parseInt(x)),
-      amount: (x) => parseFloat(x),
-    }).map((x) => new BillingItemModel(x))
-
-    $categories = parseCSV(cats, { type: (x) => parseInt(x) }).map(
-      (x) => new Category(x),
-    )
+    const serialized = serialize([cats, items])
+    $categories = serialized[0]
+    $billingItems = serialized[1]
 
     $isLoading = false
   })

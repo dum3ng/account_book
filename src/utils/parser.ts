@@ -1,4 +1,8 @@
+import BillingItem from '../model/billing_item'
+import Category from '../model/category'
+
 type Formatter = (x: string) => any
+type Stringify = (x: any) => string
 /**
  * parse a csv string to an array.
  * example:
@@ -29,4 +33,53 @@ export function parseCSV(
   } catch (e) {
     throw new Error(`parse csv data failed: ${e}`)
   }
+}
+
+/**
+ * parse string to category and billingItem object.
+ */
+export function serialize([rawCategories, rawItems]: [string, string]) {
+  const categories = parseCSV(rawCategories, { type: (x) => parseInt(x) }).map(
+    (x) => new Category(x),
+  )
+  const items = parseCSV(rawItems, {
+    type: (x) => parseInt(x),
+    time: (x) => new Date(parseInt(x)),
+    amount: (x) => parseFloat(x),
+  }).map((x) => new BillingItem(x))
+
+  return [categories, items] as [Category[], BillingItem[]]
+}
+
+export function csvify(objs: any[], formatter?: { [k: string]: Stringify }) {
+  const keys = Object.keys(objs[0])
+  const header = keys.join(',')
+  const rows = objs
+    .map((o) =>
+      keys
+        .map((k) => {
+          formatter && formatter[k] ? formatter[k](o[k]) : o[k].toString()
+        })
+        .join(','),
+    )
+    .join('\n')
+  return header + '\n' + rows
+}
+/**
+ * deserialize object into csv text.
+ */
+export function deserialize([categories, items]: [Category[], BillingItem[]]) {
+  let rawCategories = ''
+  let rawItems = ''
+  if (categories.length) {
+    rawCategories = csvify(categories)
+  }
+  if (items.length) {
+    rawItems = csvify(items, {
+      time: (x) => x.getTime(),
+      amount: (x) => x.toFixed(2).toString(),
+    })
+  }
+
+  return [rawCategories, rawItems]
 }
