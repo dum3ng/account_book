@@ -1,5 +1,6 @@
+import BillingItem from '../src/model/billing_item'
 import Category from '../src/model/category'
-import { csvify, parseCSV } from '../src/utils/parser'
+import { csvify, deserialize, parseCSV } from '../src/utils/parser'
 
 describe('test parse data', () => {
   test('', () => {
@@ -19,7 +20,36 @@ describe('test csvify', () => {
       new Category({ id: '2342m', type: 1, name: '工资' }),
     ]
     const str = csvify(cats)
-    expect(str.split('\n')).toHaveLength(3)
-    expect(str.split('\n')[0]).toBe('id,name,type')
+    const rows = str.split('\n')
+    expect(rows).toHaveLength(3)
+    expect(rows[0]).toBe('id,name,type')
+    expect(rows[1]).toBe('2342l,交通,0')
+  })
+
+  test('csvify should transform billingItems to valid csv string', () => {
+    const now = new Date()
+    const items = [
+      new BillingItem({ amount: 3000, type: 0, time: now, category: 'abcd' }),
+    ]
+    const str = csvify(items, {
+      time: (x) => x.getTime(),
+      amount: (x) => x.toFixed(2).toString(),
+    })
+    const rows = str.split('\n')
+    expect(rows).toHaveLength(2)
+    expect(rows[1]).toBe(`0,${now.getTime()},3000.00,abcd`) // the order is the same with in the constructor
   })
 })
+
+// describe('test deserilize', () => {
+//   test('deserialize should form correct csv format', () => {
+//     const cats = [
+//       new Category({ id: '2342l', type: 0, name: '交通' }),
+//       new Category({ id: '2342m', type: 1, name: '工资' }),
+//     ]
+//     const [rawC, rawI] = deserialize([cats, []])
+//     const rows = rawC.split('\n')
+//     expect(rows[0]).toBe('id,name,type')
+//     expect(rows[1]).toBe('2342l,0,交通')
+//   })
+// })

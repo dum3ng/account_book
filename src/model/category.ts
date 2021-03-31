@@ -8,6 +8,9 @@ export default class Category extends Model {
 
   constructor(payload: any) {
     const { id, name, type } = payload
+
+    if (!id) throw new Error('bad formated payload')
+
     super(id)
     this.id = id
     this.name = name

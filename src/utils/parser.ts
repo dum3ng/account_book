@@ -57,9 +57,9 @@ export function csvify(objs: any[], formatter?: { [k: string]: Stringify }) {
   const rows = objs
     .map((o) =>
       keys
-        .map((k) => {
-          formatter && formatter[k] ? formatter[k](o[k]) : o[k].toString()
-        })
+        .map((k) =>
+          formatter && formatter[k] ? formatter[k](o[k]) : o[k].toString(),
+        )
         .join(','),
     )
     .join('\n')

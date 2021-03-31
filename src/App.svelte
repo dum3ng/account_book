@@ -10,7 +10,7 @@
   import Loading from './components/Loading.svelte'
   import * as api from './api'
   import { onMount } from 'svelte'
-  import { serialize } from './utils/parser'
+  import { deserialize, serialize } from './utils/parser'
   import Statistics from './components/Statistics.svelte'
   import Modal from './components/Modal.svelte'
   import AddBilling from './components/AddBilling.svelte'
@@ -21,16 +21,40 @@
   const saver = () => {}
 
   onMount(async () => {
-    $isLoading = true
-    const [items, cats] = await Promise.all([
-      api.getBillingItems(),
-      api.getCategories(),
-    ])
-    const serialized = serialize([cats, items])
+    let serialized
+    try {
+      const ps = new Promise((resolve) => {
+        const cats = localStorage.getItem('categories')
+        const items = localStorage.getItem('items')
+        const serialized = serialize([cats, items])
+        setTimeout(() => {
+          resolve(serialized)
+        }, 1000)
+      })
+      serialized = await ps
+      console.log(serialized)
+      console.info('data loaded from localstorage.')
+    } catch {
+      console.info('data not exists or broken. Refetch...')
+      localStorage.removeItem('categories')
+      localStorage.removeItem('items')
+      $isLoading = true
+
+      const [items, cats] = await Promise.all([
+        api.getBillingItems(),
+        api.getCategories(),
+      ])
+      serialized = serialize([cats, items])
+    }
     $categories = serialized[0]
     $billingItems = serialized[1]
 
     $isLoading = false
+    // window.onbeforeunload = () => {
+    //   const [cats, items] = deserialize([$categories, $billingItems])
+    //   localStorage.setItem('categories', cats)
+    //   localStorage.setItem('items', items)
+    // }
   })
 </script>
 

@@ -34,12 +34,13 @@
 
   let max = formatDateTime(new Date())
 
-  let type = BillingType.Income
   let category = null
   let time = null
   let amount: number = 0
-  $: category = $categories.length ? $categories[0] : null
-  $: canSubmit = amount > 0 && isDate(time)
+  $: category = $categories.length ? $categories[0].id : null
+  $: canSubmit = amount > 0 && time && isDate(time)
+  $: type = category ? $categories.find((c) => c.id === category)!.type : ''
+  $: typeStr = type === BillingType.Income ? 'INCOME' : 'OUTCOME'
 
   let handleCategory = (e) => (category = e.target.value)
 </script>
@@ -48,16 +49,12 @@
   <Card>
     <div class="formfield">
       <span>category </span>
-      <select
-        name="category"
-        id=""
-        on:change={handleCategory}
-        value={category?.id}
-      >
+      <select name="category" id="" on:change={handleCategory} value={category}>
         {#each $categories as c (c.id)}
           <option value={c.id}>{c.name}</option> />
         {/each}
       </select>
+      <span>{typeStr}</span>
     </div>
     <!-- time -->
     <div class="formfield">
@@ -68,29 +65,6 @@
         min="1900-01-01T00:00"
         {max}
       />
-    </div>
-    <!-- type: income/outcome -->
-    <div class="formfield">
-      <span>type</span>
-      <input
-        type="radio"
-        name="type"
-        value={BillingType.Income}
-        id="type-income"
-        on:click={() => (type = BillingType.Income)}
-        checked={type === BillingType.Income}
-      />
-      <label for="type-income">INCOME</label>
-      <Spacer />
-      <input
-        type="radio"
-        name="type"
-        value={BillingType.Outcome}
-        id="type-outcome"
-        on:click={() => (type = BillingType.Outcome)}
-        checked={type === BillingType.Outcome}
-      />
-      <label for="type-outcome">OUTCOME</label>
     </div>
     <!-- amount -->
     <div class="formfield">
