@@ -24,11 +24,11 @@
         height: 300,
         width: 300,
       },
-      title: {
-        text: title,
-      },
       tooltip: {
         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>',
+      },
+      title: {
+        text: undefined,
       },
       accessibility: {
         point: {

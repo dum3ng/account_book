@@ -10,10 +10,12 @@
       $currentBillingItems.filter((i) => i.type === BillingType.Income),
       'category',
     ),
-  ).map(([k, v]) => ({
-    name: $categories.find((x) => x.id === k)!.name,
-    y: v.reduce((pre, a) => pre + a.amount, 0),
-  }))
+  )
+    .map(([k, v]) => ({
+      name: $categories.find((x) => x.id === k)!.name,
+      y: v.reduce((pre, a) => pre + a.amount, 0),
+    }))
+    .sort((a, b) => b.y - a.y)
 
   let outcomeData
   $: outcomeData = Object.entries(
@@ -21,20 +23,33 @@
       $currentBillingItems.filter((i) => i.type === BillingType.Outcome),
       'category',
     ),
-  ).map(([k, v]) => ({
-    name: $categories.find((x) => x.id === k)!.name,
-    y: v.reduce((pre, a) => pre + a.amount, 0),
-  }))
+  )
+    .map(([k, v]) => ({
+      name: $categories.find((x) => x.id === k)!.name,
+      y: v.reduce((pre, a) => pre + a.amount, 0),
+    }))
+    .sort((a, b) => b.y - a.y)
 </script>
 
 <div class="container">
-  <CategoryChart title="income" serie="income" data={incomeData} />
-  <CategoryChart title="outcome" serie="outcome" data={outcomeData} />
+  <div class="half">
+    {#if incomeData.length}
+      <CategoryChart title="income" serie="income" data={incomeData} />
+    {/if}
+  </div>
+  <div class="half">
+    {#if outcomeData.length}
+      <CategoryChart title="outcome" serie="outcome" data={outcomeData} />
+    {/if}
+  </div>
 </div>
 
 <style>
   .container {
     display: flex;
     justify-content: space-around;
+  }
+  .half {
+    flex: 1;
   }
 </style>
