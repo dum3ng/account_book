@@ -23,6 +23,7 @@
   onMount(async () => {
     let serialized
     try {
+      $isLoading = true
       const ps = new Promise((resolve) => {
         const cats = localStorage.getItem('categories')
         const items = localStorage.getItem('items')
@@ -38,7 +39,6 @@
       console.info('data not exists or broken. Refetch...')
       localStorage.removeItem('categories')
       localStorage.removeItem('items')
-      $isLoading = true
 
       const [items, cats] = await Promise.all([
         api.getBillingItems(),
@@ -50,11 +50,11 @@
     $billingItems = serialized[1]
 
     $isLoading = false
-    // window.onbeforeunload = () => {
-    //   const [cats, items] = deserialize([$categories, $billingItems])
-    //   localStorage.setItem('categories', cats)
-    //   localStorage.setItem('items', items)
-    // }
+    window.onbeforeunload = () => {
+      const [cats, items] = deserialize([$categories, $billingItems])
+      localStorage.setItem('categories', cats)
+      localStorage.setItem('items', items)
+    }
   })
 </script>
 

@@ -2,7 +2,7 @@ import { derived, readable, writable } from 'svelte/store'
 import type BillingItem from '../model/billing_item'
 import type Category from '../model/category'
 
-export const isLoading = writable(true)
+export const isLoading = writable(false)
 export const currentYear = writable(new Date().getFullYear())
 export const currentMonth = writable(new Date().getMonth() + 1)
 export const billingItems = writable<BillingItem[]>([])
