@@ -3,6 +3,7 @@
   import BillingItem from '../model/billing_item'
   import { BillingType } from '../model/utils'
   import { addBillingItem, categories } from '../store'
+  import { formatDateTime, isDate } from '../utils/helpers'
   import Card from './Card.svelte'
   import Spacer from './Spacer.svelte'
 
@@ -13,23 +14,32 @@
     dispatch('close')
   }
 
+  function validate() {}
+
   let onOk = (e) => {
     if (amount < 0) {
       return alert('Can not input an amount less than 0 ')
     }
+    if (isDate(time)) {
+      const d = new Date(time)
+      if (d.getTime() > Date.now()) return alert('Are you from THE Future?')
+    }
     // add the billing item
-    const item = new BillingItem({ time, type, amount, category: category.id })
+    const item = new BillingItem({ time, type, amount, category })
     addBillingItem(item)
 
     dispatch('ok')
     dispatch('close')
   }
 
+  let max = formatDateTime(new Date())
+
   let type = BillingType.Income
   let category = null
   let time = null
   let amount: number = 0
   $: category = $categories.length ? $categories[0] : null
+  $: canSubmit = amount > 0 && isDate(time)
 
   let handleCategory = (e) => (category = e.target.value)
 </script>
@@ -52,7 +62,12 @@
     <!-- time -->
     <div class="formfield">
       <span for="">time</span>
-      <input type="datetime-local" bind:value={time} />
+      <input
+        type="datetime-local"
+        bind:value={time}
+        min="1900-01-01T00:00"
+        {max}
+      />
     </div>
     <!-- type: income/outcome -->
     <div class="formfield">
@@ -80,12 +95,12 @@
     <!-- amount -->
     <div class="formfield">
       <span>amount</span>
-      <input type="number" bind:value={amount} min="0" />
+      <input type="number" bind:value={amount} min="0" step="0.01" />
     </div>
     <div slot="footer">
       <button on:click={onCancel}>cancel</button>
       <Spacer />
-      <button on:click={onOk}>OK</button>
+      <button disabled={!canSubmit} on:click={onOk}>OK</button>
     </div>
   </Card>
 </div>

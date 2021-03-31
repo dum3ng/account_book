@@ -64,4 +64,9 @@
   <div class="container" bind:this={container} />
 </div>
 
-<style></style>
+<style>
+  .container {
+    display: flex;
+    justify-content: center;
+  }
+</style>

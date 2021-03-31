@@ -26,3 +26,19 @@ export function formatTime(t: Date) {
     t.getSeconds(),
   )}`
 }
+
+export function isDate(a) {
+  const d = new Date(a)
+  return !isNaN(d.getDate())
+}
+
+/**
+ * format a Date to shape of `yyyy-MM-ddTHH:mm` to use in input html element.
+ * @param d a Date
+ */
+export function formatDateTime(d: Date) {
+  const p = (x: number, n: number = 2) => x.toString().padStart(n, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(
+    d.getHours(),
+  )}:${p(d.getMinutes())}`
+}
